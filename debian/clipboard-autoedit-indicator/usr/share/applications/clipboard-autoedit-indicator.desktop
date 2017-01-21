@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=0.1
-Name=Clipboard Autoedit
-Comment=
-Exec=clipboard-autoedit-indicator
-Type=Application
-Icon=insert-text
-Terminal=false
-
