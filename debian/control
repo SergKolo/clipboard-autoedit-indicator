@@ -12,4 +12,5 @@ Depends: python3-gi,
          gir1.2-appindicator3-0.1,
          ${python:Depends},
          ${misc:Depends}
-Description: 
+Description:  Clipboard AutoEdit Indicator
+  Indicator for simple clipboard manipulations via regex
