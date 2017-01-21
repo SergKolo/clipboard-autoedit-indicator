@@ -33,7 +33,9 @@
 # SOFTWARE.
 import gi
 gi.require_version('AppIndicator3', '0.1')
+gi.require_version('Notify', '0.7')
 from gi.repository import AppIndicator3
+from gi.repository import Notify
 from gi.repository import Gtk
 from gi.repository import Gdk
 #from collections import OrderedDict
@@ -83,6 +85,8 @@ class ClipboardAutoeditor(object):
         self.app.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.app.set_icon("insert-text")
 
+        self.notif = Notify.Notification.new("Notify")
+
     def read_config(self):
         with open(self.config_file) as f:
              data = json.load(f)
@@ -117,6 +121,10 @@ class ClipboardAutoeditor(object):
              if re.search(self.pattern,text):
                  if self.debug: print('>>> DEBUG: Python Regex match')
                  new_text = re.sub(self.pattern,self.replacement,text)
+
+                 if new_text != text:
+                     self.send_notif(self.notif,__file__,'Clipboard edited')
+
          else:
                  if self.debug: print(">>> DEBUG: running sed")
                  cmd = ['sed','s/'+self.pattern+'/'+self.replacement+'/g']
@@ -124,6 +132,8 @@ class ClipboardAutoeditor(object):
                  proc.stdin.write(text.encode())
                  new_text = proc.communicate()[0].decode()
                  proc.stdin.close()
+                 if new_text != text:
+                     self.send_notif(self.notif,__file__,'Clipboard edited')
                  
 
          if new_text and new_text != text:
@@ -233,6 +243,22 @@ class ClipboardAutoeditor(object):
             self.tool_choice = pattern_list[2]
             if not self.tool_choice: self.tool_choice = 'python re'
             self.write_config(self.pattern,self.replacement,self.tool_choice)
+
+    def send_notif(self, n, title, text):
+        try:
+            if Notify.init(__file__):
+                n.update(title, text)
+                n.set_urgency(2)
+                if not n.show():
+                    raise SyntaxError("sending notification failed!")
+            else:
+                raise SyntaxError("can't initialize notification!")
+        except SyntaxError as error:
+            if self.debug: print(">> DEBUG:",str(error))
+            if error == "sending notification failed!":
+                Notify.uninit()
+        else:
+            Notify.uninit()
 
 
     def run(self):
