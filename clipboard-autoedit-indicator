@@ -257,7 +257,9 @@ class ClipboardAutoeditor(object):
         user_input = self.run_cmd(cmd)
  
         if user_input:
-            pattern_list = user_input.decode('unicode_escape').strip().split('\n')
+            #pattern_list = user_input.decode('unicode_escape').strip().split('\n')
+
+            pattern_list = user_input.decode().strip().split('\n')
             print(pattern_list)
             self.pattern = pattern_list[0]
             self.replacement = pattern_list[1]
