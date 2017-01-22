@@ -1,2 +1,4 @@
 clipboard-autoedit-indicator usr/bin/
 clipboard-autoedit-indicator.desktop usr/share/applications/
+clipboard-autoedit-active.png usr/share/pixmaps
+clipboard-autoedit-inactive.png usr/share/pixmaps

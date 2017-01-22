@@ -8,6 +8,7 @@
 #          regular expressions
 # Tested on: Ubuntu 16.04 LTS
 # Written for: http://askubuntu.com/q/873948/295286
+# Icons by Zacharee1 http://askubuntu.com/users/274320/zacharee1
 #
 # Licensed under The MIT License (MIT).
 # See included LICENSE file or the notice below.
@@ -58,6 +59,8 @@ class ClipboardAutoeditor(object):
         if len(sys.argv) == 2 and sys.argv[1] == 'debug':
             self.debug = True
 
+
+
         self.pattern = None
         self.replacement = None
         self.tool_choice = None
@@ -82,10 +85,12 @@ class ClipboardAutoeditor(object):
 
         self.toggle_button = None
         self.make_menu()
-        self.app.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
-        self.app.set_icon("insert-text")
 
         self.notif = Notify.Notification.new("Notify")
+
+        self.app.set_icon("clipboard-autoedit-active")
+        self.app.set_attention_icon("clipboard-autoedit-inactive")
+        self.app.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
 
     def read_config(self):
         with open(self.config_file) as f:
@@ -185,8 +190,15 @@ class ClipboardAutoeditor(object):
 #        else: self.editing_enabled = True
          if self.toggle_button.get_active():
              self.editing_enabled = True
+             self.app.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+             #self.app.set_icon("clipboard-autoedit-active")
          else:
              self.editing_enabled = False
+             self.app.set_status(AppIndicator3.IndicatorStatus.ATTENTION)
+             #self.app.set_icon("clipboard-autoedit-active")
+
+
+
 
 
     def make_menu(self,*args):
