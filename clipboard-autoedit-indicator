@@ -7,7 +7,7 @@
 # Purpose: AppIndicator3 for automatic clipboard editing using 
 #          regular expressions
 # Tested on: Ubuntu 16.04 LTS
-#
+# Written for: http://askubuntu.com/q/873948/295286
 #
 # Licensed under The MIT License (MIT).
 # See included LICENSE file or the notice below.
@@ -80,7 +80,7 @@ class ClipboardAutoeditor(object):
 
         self.editing_enabled = False
 
-
+        self.toggle_button = None
         self.make_menu()
         self.app.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.app.set_icon("insert-text")
@@ -181,8 +181,12 @@ class ClipboardAutoeditor(object):
         return menu_item
 
     def toggle_editing(self,*args):
-        if self.editing_enabled: self.editing_enabled = False
-        else: self.editing_enabled = True
+#        if self.editing_enabled: self.editing_enabled = False
+#        else: self.editing_enabled = True
+         if self.toggle_button.get_active():
+             self.editing_enabled = True
+         else:
+             self.editing_enabled = False
 
 
     def make_menu(self,*args):
@@ -194,20 +198,25 @@ class ClipboardAutoeditor(object):
 
         self.app_menu = Gtk.Menu()
 
-        item = Gtk.CheckMenuItem('Replacement Enabled')
-        self.app_menu.append(item)
-        item.connect('activate',self.toggle_editing)
-        item.show()
+        self.toggle_button = Gtk.CheckMenuItem('Replacement Enabled')
+        self.app_menu.append(self.toggle_button)
+        self.toggle_button.connect('activate',self.toggle_editing)
+        self.toggle_button.show()
 
-        item = [self.app_menu,Gtk.ImageMenuItem,'gtk-open','Show clipboard contents',self.show_clipboard,[None]]
+        item = [self.app_menu,Gtk.ImageMenuItem,
+                'gtk-open','Show clipboard contents',
+                self.show_clipboard,[None]]
         self.add_menu_item(*item)
 
-        item = [self.app_menu,Gtk.ImageMenuItem,'gtk-preferences','Set regex pattern',self.set_regex,[None]]
+        item = [self.app_menu,Gtk.ImageMenuItem,
+                'gtk-preferences','Set regex pattern',
+                self.set_regex,[None]]
         self.add_menu_item(*item)
         
-        item = [self.app_menu,Gtk.ImageMenuItem,'exit','Quit',self.quit,[None]]
+        item = [self.app_menu,Gtk.ImageMenuItem,
+                'exit','Quit',
+                self.quit,[None]]
         self.add_menu_item(*item)
- 
 
         self.app.set_menu(self.app_menu)
 
@@ -240,9 +249,14 @@ class ClipboardAutoeditor(object):
             print(pattern_list)
             self.pattern = pattern_list[0]
             self.replacement = pattern_list[1]
-            self.tool_choice = pattern_list[2]
-            if not self.tool_choice: self.tool_choice = 'python re'
+
+            self.tool_choice = 'python re'
+            if len(pattern_list) == 3:
+                self.tool_choice = pattern_list[2]
+
             self.write_config(self.pattern,self.replacement,self.tool_choice)
+            #print(self.toggle_button.get_active())
+            self.toggle_button.set_active(True)
 
     def send_notif(self, n, title, text):
         try:
