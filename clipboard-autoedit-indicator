@@ -128,7 +128,8 @@ class ClipboardAutoeditor(object):
                  new_text = re.sub(self.pattern,self.replacement,text)
 
                  if new_text != text:
-                     self.send_notif(self.notif,__file__,'Clipboard edited')
+                     if not self.mute.get_active():
+                         self.send_notif(self.notif,__file__,'Clipboard edited')
 
          else:
                  if self.debug: print(">>> DEBUG: running sed")
@@ -224,6 +225,12 @@ class ClipboardAutoeditor(object):
                 'gtk-preferences','Set regex pattern',
                 self.set_regex,[None]]
         self.add_menu_item(*item)
+
+
+        self.mute = Gtk.CheckMenuItem('Mute notifications')
+        self.app_menu.append(self.mute)
+        #self.toggle_button.connect('activate',self.toggle_editing)
+        self.mute.show()
         
         item = [self.app_menu,Gtk.ImageMenuItem,
                 'exit','Quit',
